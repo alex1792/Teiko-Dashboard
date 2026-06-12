@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import mannwhitneyu
 
 from src.analysis.overview import get_population_frequency
+# from overview import get_population_frequency
 
 POPULATIONS = ['b_cell', 'cd8_t_cell', 'cd4_t_cell', 'nk_cell', 'monocyte']
 
@@ -139,6 +140,25 @@ def data_subset_analysis(path: str='cell-count.db'):
 
     return df_1, df_2, df_3
 
+# PART 5 in GOOGLE FORM
+def male_melanoma_responder_average_b_cell_count_at_time_0(path: str='cell-count.db'):
+    query = """
+    SELECT ROUND(AVG(cc.count), 2) AS average_B_cell_count
+    FROM cell_counts cc
+    JOIN samples s ON s.sample_id = cc.sample_id
+    JOIN subjects sub ON sub.subject_id = s.subject_id
+    WHERE sub.condition = 'melanoma'
+        AND sub.sex = 'M'
+        AND cc.population = 'b_cell'
+        AND sub.response = 'yes'
+        AND s.time_from_treatment_start = 0
+    """
+
+    conn = sqlite3.connect(path)
+    df = pd.read_sql_query(query, conn)
+
+    return df
+
 if __name__ == '__main__':
     # df = get_miraclib_melanoma_pbmc()
     # print(df.head())
@@ -148,4 +168,5 @@ if __name__ == '__main__':
 
     # part4
     # df_1, df_2, df_3 = data_subset_analysis()
-    pass
+    df = male_melanoma_responder_average_b_cell_count_at_time_0()
+    print(df.head())

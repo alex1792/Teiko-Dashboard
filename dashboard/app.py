@@ -45,6 +45,10 @@ def load_response_analysis(db_path: str):
 def load_subset_analysis(db_path: str):
     return data_subset_analysis(db_path)
 
+# @st.cache_data
+# def load_male_melanoma_responder_average_b_cell_count_at_time_0(db_path: str):
+#     return male_melanoma_responder_average_b_cell_count_at_time_0(db_path)
+
 
 tab_overview, tab_response, tab_subset = st.tabs(
     ["Part 2: Population Frequencies", "Part 3: Response Analysis", "Part 4: Data Subset Analysis"]

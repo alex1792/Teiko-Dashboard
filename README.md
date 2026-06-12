@@ -8,6 +8,7 @@ Clinical trial analysis tool for exploring immune cell population data from pati
 make install    # install dependencies
 make load       # load cell-count.csv into cell-count.db
 make dashboard  # launch Streamlit dashboard
+make analysis   # run ad-hoc queries in stats_analysis.py
 ```
 
 Requirements: Python >= 3.10
@@ -27,8 +28,8 @@ Teiko_Technical/
 └── src/
     ├── db/schema.py        # database schema
     └── analysis/
-        ├── overview.py     # Part 2
-        └── stats_analysis.py  # Part 3
+        ├── overview.py          # Part 2
+        └── stats_analysis.py    # Part 3 & 4
 ```
 
 ---
@@ -97,7 +98,7 @@ Five populations: `b_cell`, `cd8_t_cell`, `cd4_t_cell`, `nk_cell`, `monocyte`. C
 For each sample, compute total cell count and the relative frequency (%) of each population. Output columns: `sample`, `total_count`, `population`, `count`, `percentage`.
 
 - **Script:** `src/analysis/overview.py` → `get_population_frequency()`
-- **Dashboard:** "Part 2: Population Frequencies" tab
+- **Dashboard:** "Part 2: Population Frequencies" tab — filterable summary table
 
 ---
 
@@ -113,7 +114,7 @@ Compare relative frequencies between **responders** (`response = yes`) and **non
   - `get_miraclib_melanoma_pbmc()` — filter and join with Part 2 summary
   - `plot_response_boxplots()` — boxplot per population (yes vs no)
   - `compare_response_groups()` — Mann-Whitney U test (p < 0.05)
-- **Dashboard:** "Part 3: Response Analysis" tab
+- **Dashboard:** "Part 3: Response Analysis" tab — boxplots, Mann-Whitney U results, significant populations
 
 ---
 
@@ -123,14 +124,43 @@ Explore baseline samples to understand early treatment effects.
 
 **Filter:** melanoma + miraclib + PBMC + `time_from_treatment_start = 0`
 
-Report:
+**Script:** `src/analysis/stats_analysis.py` → `data_subset_analysis()`
 
-- Sample count per project
-- Subject count by response (yes / no)
-- Subject count by sex (M / F)
+Returns three summary tables:
 
-- **Script:** `src/analysis/stats_analysis.py` → `data_subset_analysis()`
-- **Dashboard:** "Part 4: Data Subset Analysis" tab
+| Query | Output |
+|-------|--------|
+| Samples by project | `project`, `sample_count` |
+| Subjects by response | `response`, `response_count` |
+| Subjects by sex | `sex`, `sex_count` |
+
+**Expected results:**
+
+| Metric | Value |
+|--------|-------|
+| Total samples | 656 |
+| prj1 samples | 384 |
+| prj3 samples | 272 |
+| Responder subjects | 331 |
+| Non-responder subjects | 325 |
+| Female subjects | 312 |
+| Male subjects | 344 |
+
+- **Dashboard:** "Part 4: Data Subset Analysis" tab — summary metrics and all three tables
+
+---
+
+## Additional Analysis (Google Form)
+
+Run standalone queries defined in `stats_analysis.py` (not shown in the dashboard):
+
+```bash
+make analysis
+```
+
+Currently prints the average B cell count for melanoma male responders at baseline (`10206.15`).
+
+Uses `PYTHONPATH=.` so `from src.analysis...` imports resolve correctly from the project root.
 
 ---
 
@@ -141,3 +171,4 @@ Report:
 | `make install` | Install Python dependencies |
 | `make load` | Build `cell-count.db` from CSV |
 | `make dashboard` | Run Streamlit app |
+| `make analysis` | Run `src/analysis/stats_analysis.py` (terminal output) |

@@ -1,4 +1,4 @@
-.PHONY: install load dashboard
+.PHONY: install load dashboard analysis
 
 install:
 	pip install -r requirements.txt
@@ -8,3 +8,6 @@ load:
 
 dashboard:
 	streamlit run dashboard/app.py
+
+analysis:
+	PYTHONPATH=. python src/analysis/stats_analysis.py
