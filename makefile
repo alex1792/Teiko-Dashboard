@@ -1,13 +1,10 @@
-.PHONY: install load dashboard analysis
+.PHONY: setup pipeline dashboard
 
-install:
+setup:
 	pip install -r requirements.txt
 
-load:
-	python load_data.py
+pipeline:
+	python run_pipeline.py
 
 dashboard:
 	streamlit run dashboard/app.py
-
-analysis:
-	PYTHONPATH=. python src/analysis/stats_analysis.py

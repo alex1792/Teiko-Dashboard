@@ -27,7 +27,7 @@ st.title("Immune Cell Population Analysis")
 st.caption("Clinical trial dashboard for Bob Loblaw — Loblaw Bio")
 
 if not DB_PATH.exists():
-    st.error("Database not found. Run `make load` or `python load_data.py` first.")
+    st.error("Database not found. Run `make pipeline` first.")
     st.stop()
 
 

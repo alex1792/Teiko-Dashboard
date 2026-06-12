@@ -53,36 +53,25 @@ def load_cell_counts(data: pd.DataFrame) -> pd.DataFrame:
     return cell_counts
 
 
+def build_database(db_path: str = 'cell-count.db', csv_path: str = 'cell-count.csv') -> None:
+    """Initialize schema and load cell-count.csv into the SQLite database."""
+    if os.path.exists(db_path):
+        os.remove(db_path)
 
-if __name__ == '__main__':
-    # check if .db file exists
-    if os.path.exists('cell-count.db'):
-        os.remove('cell-count.db')
-    
-    # get data from csv file
-    path = 'cell-count.csv'
-    data = load_data(path)
-    # print(data.head())
+    data = load_data(csv_path)
 
-    # load data from csv file, table by table
     subjects = load_subjects(data)
     subjects = subjects.rename(columns={'subject': 'subject_id'})
-    # print(subjects.head())
 
     samples = load_samples(data)
     samples = samples.rename(columns={'sample': 'sample_id', 'subject': 'subject_id'})
-    # print(samples.head())
 
     cell_counts = load_cell_counts(data)
-    # print(cell_counts['population'].unique())
-    # print(cell_counts[cell_counts['population'] == 'cd8_t_cell'].head())
 
-    # write data into database
-    conn = sqlite3.connect('cell-count.db')
+    conn = sqlite3.connect(db_path)
     init_schema(conn)
 
-    # write subjects, samples into database
-    subjects.to_sql('subjects', conn, if_exists='append', index=False, 
+    subjects.to_sql('subjects', conn, if_exists='append', index=False,
         dtype={'subject_id': 'TEXT', 'project': 'TEXT', 'condition': 'TEXT', 'age': 'INTEGER', 'sex': 'TEXT', 'treatment': 'TEXT', 'response': 'TEXT'}
     )
 
@@ -90,7 +79,6 @@ if __name__ == '__main__':
         dtype={'sample_id': 'TEXT', 'subject_id': 'TEXT', 'sample_type': 'TEXT', 'time_from_treatment_start': 'INTEGER'}
     )
 
-    # then write cell_counts into database
     cell_counts.to_sql('cell_counts', conn, if_exists='append', index=False,
         dtype={'sample_id': 'TEXT', 'population': 'TEXT', 'count': 'INTEGER'}
     )
@@ -98,4 +86,6 @@ if __name__ == '__main__':
     conn.commit()
     conn.close()
 
-    
+
+if __name__ == '__main__':
+    build_database()

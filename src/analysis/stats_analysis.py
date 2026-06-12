@@ -41,7 +41,7 @@ def get_miraclib_melanoma_pbmc(path: str='cell-count.db') -> pd.DataFrame:
     """
     conn = sqlite3.connect(path)
     df = pd.read_sql_query(query, conn)
-    # print(df.head())
+    conn.close()
 
     # merge the frequency and the subjects dataframe
     df = freq_df.merge(df, left_on='sample_id', right_on='sample_id', how='inner')
@@ -156,6 +156,7 @@ def male_melanoma_responder_average_b_cell_count_at_time_0(path: str='cell-count
 
     conn = sqlite3.connect(path)
     df = pd.read_sql_query(query, conn)
+    conn.close()
 
     return df
 
